@@ -1,7 +1,7 @@
 from enum import Enum, auto
 import numpy as np
+from src.views import ROWS, COLUMNS
 
-ROWS, COLUMNS = 10, 10
 
 class State(Enum):
     DEAD = auto()
@@ -20,19 +20,18 @@ class Game:
     }
 
     def __init__(self, seed=None):
-        self.board = Game.initialize_board_from_seed(seed)
+        self.initialize_board_from_seed(seed)
 
-    @staticmethod
-    def initialize_board_from_seed(seed=None):
+    def initialize_board_from_seed(self, seed=None):
         """ seed is a list of coordinate pairs representing cells (e.g. [(3,4),(5,6)]) """
-        board = np.full((ROWS,COLUMNS), State.DEAD)
+        self.board = np.full((ROWS,COLUMNS), State.DEAD)
         if seed is None:
-            return board
-            
-        for r,c in seed:
-            board[r][c] = State.ALIVE
-        return board
+            return
 
+        print(f"\n[initialize]: {seed}, first: {seed[0]}")
+        for r,c in seed:
+            self.board[r][c] = State.ALIVE
+        
     def count_neighbors(self, row, column):
         count = 0
         for i in [-1,0,1]:
@@ -45,18 +44,22 @@ class Game:
                             count += 1
                     except IndexError:
                         # What to do with neighbor cells outside the grid?
+                        # print(f"\n[IndexError]: ({row+i},{column+j})")
                         pass
         return count
 
     def update_board(self):
+        print('\n')
         next_gen = np.full((ROWS, COLUMNS), State.DEAD)
         for row in range(ROWS):
             for column in range(COLUMNS):
                 state = self.board[row][column]
                 if Game.rules[state][0](row, column, self):
+                    print(f"[update_board]: ({row}, {column}) {state} -> {Game.rules[state][1]}")
                     next_gen[row][column] = Game.rules[state][1]
                 else:
                     next_gen[row][column] = state
+        del(self.board)
         self.board = next_gen
 
     def get_live_cells(self):
@@ -65,5 +68,6 @@ class Game:
             for column in range(COLUMNS):
                 if self.board[row][column] == State.ALIVE:
                     alive.append((row,column))
+        print(f"\n[get_live_cells]: {alive}")
         return alive
 

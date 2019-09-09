@@ -125,3 +125,6 @@ dmypy.json
 
 # Visual Studio Code settings
 .vscode/
+
+# scratch folder
+misc/
