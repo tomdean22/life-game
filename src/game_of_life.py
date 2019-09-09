@@ -25,7 +25,7 @@ class Game:
     def initialize_board_from_seed(self, seed=None):
         """ seed is a list of coordinate pairs representing cells (e.g. [(3,4),(5,6)]) """
         self.board = np.full((ROWS,COLUMNS), State.DEAD)
-        if seed is None:
+        if seed is None or len(seed) == 0:
             return
 
         print(f"\n[initialize]: {seed}, first: {seed[0]}")

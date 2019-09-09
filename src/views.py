@@ -8,7 +8,7 @@ GREEN = "#6cd777"
 ORANGE = "#D66825"
 DARKORANGE = "#723612"
 
-CANVAS_SIZE = 403, 600
+CANVAS_SIZE = 393, 600
 CELL_SIZE = 15
 ROWS, COLUMNS = (CANVAS_SIZE[0]//CELL_SIZE, CANVAS_SIZE[1]//CELL_SIZE)
 
@@ -21,14 +21,14 @@ class GameDisplay:
     def __init__(self, master):
         print(f"ROWS/COLUMNS: {formatRC(ROWS, COLUMNS)}")
         self.canv = Canvas(master, height=CANVAS_SIZE[0], width=CANVAS_SIZE[1], bg=DARK)
-        self.recs = self.create_squares()
+        self.create_squares()
 
         self.canv.bind('<ButtonPress-1>', self.select_square)
         self.canv.pack(fill=BOTH)
     
     def select_square(self, event):
         canvas = event.widget
-        x = canvas.canvasx(event.x)
+        x = canvas.canvasx(event.x) 
         y = canvas.canvasy(event.y)
         id_ = canvas.find_closest(x, y)[0]
 
@@ -49,35 +49,44 @@ class GameDisplay:
             self.canv.itemconfig(self.recs[key], fill=fill, activefill=activefill, outline=outline, tags=tag)
 
     def create_squares(self):
-        recs = dict()
+        self.recs = dict()
         y = 4
         for row in range(ROWS):
             x = 4
             for column in range(COLUMNS):
-                recs[formatRC(row,column)] = self.canv\
+                self.recs[formatRC(row,column)] = self.canv\
                     .create_rectangle(x, y, x+CELL_SIZE, y+CELL_SIZE,
                     fill=LIGHT, outline=ORANGE, activefill=DARKORANGE, tags="dead")
                 x += CELL_SIZE
             y += CELL_SIZE
-        return recs
+
+    def reset_squares(self):
+        options = ['fill', 'activefill', 'outline','tags']
+        set_opts = {k:v for k,v in \
+                        zip(options, [LIGHT, DARKORANGE, ORANGE, 'dead']) }
+        for square in self.canv.find_withtag("alive"):
+            self.canv.itemconfig(square, **set_opts)
 
     def get_live_squares(self):
         alive_cells = self.canv.find_withtag("alive")
         return list((flr(i), md(i)) for i in alive_cells)
 
-    def display_squares(self, live_cells):
-        print(f"\n[display_squares(1)]: {live_cells} type: {type(live_cells[0])}")
+    def display_squares(self, live_cells=None):
+        if live_cells is None:
+            live_cells = []
+        else:
+            live_cells = [formatRC(*cell) for cell in live_cells]
+            print(f"\n[display_squares(1)]: {live_cells} type: {type(live_cells[0])}")
         options = ['fill', 'activefill', 'outline','tags']
-        live_cells = [formatRC(*cell) for cell in live_cells]
-        opts = None
+        set_opts = None
         for row in range(ROWS):
             for column in range(COLUMNS):
                 key = formatRC(row,column)
                 if key in live_cells:
-                    opts = {k:v for k,v in \
+                    set_opts = {k:v for k,v in \
                         zip(options,[ORANGE, ORANGE, WHITE, 'alive']) }
                 else:
-                    opts = {k:v for k,v in \
+                    set_opts = {k:v for k,v in \
                         zip(options, [LIGHT, DARKORANGE, ORANGE, 'dead']) }
-                self.canv.itemconfig(self.recs[key], **opts)
+                self.canv.itemconfig(self.recs[key], **set_opts)
 

@@ -47,7 +47,7 @@ def loop_switch(btn):
 
 def reset():
     game.initialize_board_from_seed()
-    display.create_squares()
+    display.reset_squares()
 
 def main():
     btn_opts = {k:v for k,v in zip(['bg', 'font','bd','fg','highlightcolor',
@@ -69,11 +69,12 @@ def main():
 
     b4 = Button(baseFrame, **btn_opts,
                            text="Clear",
-                           command=lambda: game.initialize_board_from_seed())
+                           command=reset)
 
     b1.pack(fill=Y, side=LEFT)
     b2.pack(fill=Y, side=LEFT)
     b3.pack(fill=Y, side=RIGHT)
+    b4.pack(fill=Y, side=RIGHT)
 
     baseFrame.pack(fill=BOTH, side=BOTTOM)
     master.update()
