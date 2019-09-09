@@ -35,7 +35,7 @@ class GameDisplay:
         row = event.y // CELL_SIZE
         column = event.x // CELL_SIZE
         key = formatRC(row, column)
-        print(f"\n[select_square(0)]: {id_} at location: {key}")
+        print(f"[select_square(0)]: {id_} at location: {key}")
 
         try:
             color = self.canv.itemcget(self.recs[key], option="fill")
