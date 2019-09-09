@@ -1,16 +1,5 @@
-from enum import Enum, auto
 import numpy as np
-from src.views import ROWS, COLUMNS
-
-
-class State(Enum):
-    DEAD = auto()
-    ALIVE = auto()
-
-
-class Trigger(Enum):
-    JUSTRIGHT     = lambda i,j,g: g.count_neighbors(i,j) == 3
-    BADPOPULATION = lambda i,j,g: g.count_neighbors(i,j) < 2 or g.count_neighbors(i,j) > 3
+from .helpers import State, Trigger, Const
 
 
 class Game:
@@ -24,11 +13,12 @@ class Game:
 
     def initialize_board_from_seed(self, seed=None):
         """ seed is a list of coordinate pairs representing cells (e.g. [(3,4),(5,6)]) """
-        self.board = np.full((ROWS,COLUMNS), State.DEAD)
+        self.board = np.full((Const.ROWS,Const.COLUMNS), State.DEAD)
         if seed is None or len(seed) == 0:
             return
+        else:
+            print(f"\n[initialize_board_from_seed]: {seed}")
 
-        print(f"\n[initialize]: {seed}, first: {seed[0]}")
         for r,c in seed:
             self.board[r][c] = State.ALIVE
         
@@ -50,12 +40,12 @@ class Game:
 
     def update_board(self):
         print('\n')
-        next_gen = np.full((ROWS, COLUMNS), State.DEAD)
-        for row in range(ROWS):
-            for column in range(COLUMNS):
+        next_gen = np.full((Const.ROWS, Const.COLUMNS), State.DEAD)
+        for row in range(Const.ROWS):
+            for column in range(Const.COLUMNS):
                 state = self.board[row][column]
                 if Game.rules[state][0](row, column, self):
-                    print(f"[update_board]: ({row}, {column}) {state} -> {Game.rules[state][1]}")
+                    print(f"[update_board]: ({row:2},{column:2}) {state:11} -> {Game.rules[state][1]}")
                     next_gen[row][column] = Game.rules[state][1]
                 else:
                     next_gen[row][column] = state
@@ -64,8 +54,8 @@ class Game:
 
     def get_live_cells(self):
         alive = []
-        for row in range(ROWS):
-            for column in range(COLUMNS):
+        for row in range(Const.ROWS):
+            for column in range(Const.COLUMNS):
                 if self.board[row][column] == State.ALIVE:
                     alive.append((row,column))
         print(f"\n[get_live_cells]: {alive}")
