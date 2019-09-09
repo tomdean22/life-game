@@ -1,15 +1,15 @@
 from tkinter import Canvas
 from tkinter import BOTH, TOP
 
-
 DARK = "#111a1e"
 LIGHT = "#142229"
+WHITE = "#ffffff"
 GREEN = "#6cd777"
 ORANGE = "#D66825"
 DARKORANGE = "#723612"
 
 CANVAS_SIZE = 403, 600
-CELL_SIZE = 20
+CELL_SIZE = 15
 ROWS, COLUMNS = (CANVAS_SIZE[0]//CELL_SIZE, CANVAS_SIZE[1]//CELL_SIZE)
 
 formatRC = lambda r,c: f"({r},{c})"
@@ -44,8 +44,9 @@ class GameDisplay:
         else:
             fill = ORANGE if color == LIGHT else LIGHT
             activefill = ORANGE if fill == ORANGE else DARKORANGE
+            outline = WHITE if fill == ORANGE else ORANGE
             tag = "alive" if fill == ORANGE else "dead"
-            self.canv.itemconfig(self.recs[key], fill=fill, activefill=activefill, tags=tag)
+            self.canv.itemconfig(self.recs[key], fill=fill, activefill=activefill, outline=outline, tags=tag)
 
     def create_squares(self):
         recs = dict()
@@ -60,24 +61,23 @@ class GameDisplay:
             y += CELL_SIZE
         return recs
 
-    def collect_squares(self):
+    def get_live_squares(self):
         alive_cells = self.canv.find_withtag("alive")
         return list((flr(i), md(i)) for i in alive_cells)
 
     def display_squares(self, live_cells):
         print(f"\n[display_squares(1)]: {live_cells} type: {type(live_cells[0])}")
+        options = ['fill', 'activefill', 'outline','tags']
         live_cells = [formatRC(*cell) for cell in live_cells]
-        print(f"[display_squares(2)]:")
         opts = None
         for row in range(ROWS):
             for column in range(COLUMNS):
                 key = formatRC(row,column)
                 if key in live_cells:
-                    print(f"  {key}")
-                    opts = {k:v for k,v in zip(['fill', 'activefill','tags'],
-                                                [ORANGE, ORANGE, 'alive']) }
+                    opts = {k:v for k,v in \
+                        zip(options,[ORANGE, ORANGE, WHITE, 'alive']) }
                 else:
-                    opts = {k:v for k,v in zip(['fill', 'activefill','tags'],
-                                                [LIGHT, DARKORANGE, 'dead']) }
+                    opts = {k:v for k,v in \
+                        zip(options, [LIGHT, DARKORANGE, ORANGE, 'dead']) }
                 self.canv.itemconfig(self.recs[key], **opts)
 

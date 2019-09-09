@@ -10,20 +10,17 @@ game = Game()
 
 def updateGenCallback(game, display):
     # collect live cells from GUI
-    live_cells = display.collect_squares()
+    live_cells = display.get_live_squares()
+    print(f"\n[updateGenCallback(1)]: {live_cells} type: {type(live_cells[0])}")
 
-    print(f"\n[callback]: {live_cells} type: {type(live_cells[0])}")
     # initialize game with cells
     game.initialize_board_from_seed(live_cells)
     del(live_cells)
-
     # update generation
     game.update_board()
-
     # collect live cells
     live_cells = game.get_live_cells()
-
-    print(f"\n[updateGenCallback]: {live_cells}, type: {type(live_cells[0])}")
+    print(f"\n[updateGenCallback(2)]: {live_cells}, type: {type(live_cells[0])}")
 
     # change cell color
     display.display_squares(live_cells)
