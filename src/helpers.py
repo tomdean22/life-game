@@ -32,7 +32,7 @@ class Config:
     # Format the row, column to use as a key
     # Use each cell's id to compute (row, column) key
     formatRC      = lambda r,c: f"({r},{c})"
-    flr           = lambda id: id // Config.COLUMNS if id % Config.COLUMNS != 0 or id == 0 \
+    flr           = lambda id: id // Config.COLUMNS if id % Config.COLUMNS != 0 \
                       else id // Config.COLUMNS - 1
     md            = lambda id: id % Config.COLUMNS - 1 if id % Config.COLUMNS != 0 \
                       else Config.COLUMNS - 1

@@ -83,10 +83,10 @@ class Controller:
         self.game.update_board()
         updated = self.game.get_live_cells()
         print(f"[__init__.Controller.update_callback<Game>]: {updated}")
-        # if current and updated are the same, the patterns are static, stop the loop
 
         Controller.gamedisplay.display_cells(updated)
 
+        # if current and updated are the same, the patterns are static, stop the loop
         if cnf.no_change(current,updated) and Controller.loop:
             self.updateBtn.config(state="active")
             self.clearBtn.config(state="active")

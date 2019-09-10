@@ -37,7 +37,7 @@ class Game:
         del(self.board)
         self.board = np.full((cnf.ROWS,cnf.COLUMNS), State.DEAD)
         
-        if seed is None or len(seed) == 0:
+        if seed is None or len(seed) is 0:
             return
 
         print(f"[gameoflife.Game.initialize_board_from_seed]: {seed}")
@@ -49,7 +49,7 @@ class Game:
         
     def count_neighbors(self, row, column) -> int:
         """
-        Return the number of live cells surrounding self.board[row][column] 
+        Return the number of live cells surrounding self.board[row, column] 
         
         Parameters:
             row, column
@@ -92,7 +92,7 @@ class Game:
         Gathers live cells for the display
         
         Returns:
-            live_cells: list of live cells as (row, column) tuples
+            live_cells: list of live cells as cell ids
         """
 
         # numpy arrays return an array of booleans when checking for equality

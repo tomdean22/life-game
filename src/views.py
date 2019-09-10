@@ -48,7 +48,6 @@ class GameDisplay:
         """
         id_ = cnf.getID(event)
         rc  = cnf.getRC(event)
-
         print(f"[views.GameDisplay.select_cell]: {id_} at location: {rc}")
 
         try:
