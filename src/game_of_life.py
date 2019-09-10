@@ -12,7 +12,10 @@ class Game:
         self.initialize_board_from_seed(seed)
 
     def initialize_board_from_seed(self, seed=None):
-        """ seed is a list of coordinate pairs representing cells (e.g. [(3,4),(5,6)]) """
+        """
+        Create a 2D numpy array with an initial state of State.DEAD.
+        If a seed list is given, the cells 
+        """
         self.board = np.full((Const.ROWS,Const.COLUMNS), State.DEAD)
         if seed is None or len(seed) == 0:
             return
@@ -22,7 +25,7 @@ class Game:
         for r,c in seed:
             self.board[r][c] = State.ALIVE
         
-    def count_neighbors(self, row, column):
+    def count_neighbors(self, row: int, column: int) -> int:
         count = 0
         for i in [-1,0,1]:
             for j in [-1,0,1]:

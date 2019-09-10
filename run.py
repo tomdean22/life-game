@@ -1,4 +1,4 @@
-from src import main
+from src import Controller
 
 if __name__ == '__main__':
-    main()
+    Controller()
