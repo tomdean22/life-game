@@ -1,5 +1,5 @@
 import numpy as np
-from .helpers import State, Trigger, Const
+from .helpers import State, Trigger, Configuration as config
 
 
 class Game:
@@ -7,7 +7,7 @@ class Game:
     A class for Conway's Game of Life
     
     Attributes:
-        board: 2D numpy array of (row, column) tuples
+        board: 2D numpy array of cells as (row, column) tuples
         rules: Conway's Game of Life rules    
     """
     rules = {
@@ -33,7 +33,7 @@ class Game:
             seed: list of live cells as (row, column) tuples
         """
 
-        self.board = np.full((Const.ROWS,Const.COLUMNS), State.DEAD)
+        self.board = np.full((config.ROWS,config.COLUMNS), State.DEAD)
         if seed is None or len(seed) == 0:
             return
         else:
@@ -70,12 +70,13 @@ class Game:
     def update_board(self):
         """ Apply Conway's rules """
 
-        next_gen = np.full((Const.ROWS, Const.COLUMNS), State.DEAD)
-        for row in range(Const.ROWS):
-            for column in range(Const.COLUMNS):
+        next_gen = np.full((config.ROWS, config.COLUMNS), State.DEAD)
+        for row in range(config.ROWS):
+            for column in range(config.COLUMNS):
                 state = self.board[row][column]
                 if Game.rules[state][0](row, column, self):
-                    print(f"[gameoflife.Game.update_board]: ({row:2},{column:2}) {state:11} -> {Game.rules[state][1]}")
+                    print(f"[gameoflife.Game.update_board]: \
+                        ({row:2},{column:2}) {state:1} -> {Game.rules[state][1]}")
                     next_gen[row][column] = Game.rules[state][1]
                 else:
                     next_gen[row][column] = state
@@ -94,8 +95,8 @@ class Game:
         #          so all State.ALIVE cells are grouped together.
 
         live_cells = []
-        for row in range(Const.ROWS):
-            for column in range(Const.COLUMNS):
+        for row in range(config.ROWS):
+            for column in range(config.COLUMNS):
                 if self.board[row][column] == State.ALIVE:
                     live_cells.append((row,column))
         print(f"\n[gameoflife.Game.get_live_cells]: {live_cells}")
