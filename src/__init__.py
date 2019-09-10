@@ -1,6 +1,6 @@
 from tkinter import Tk, Label, LabelFrame, Button
 from tkinter import LEFT, RIGHT, BOTTOM, TOP, BOTH, Y, X
-from src.helpers import Colors, Configuration as config
+from src.helpers import Colors, Config as cnf
 from src.views import GameDisplay
 from src.gameoflife import Game
 
@@ -21,8 +21,8 @@ class Controller:
         quitBtn: close application
         clearBtn: reset display and game board
     """
-    height = config.CANVAS_SIZE[0] + 66
-    width = config.CANVAS_SIZE[1] + 13
+    height = cnf.CANVAS_SIZE[0] + 66
+    width = cnf.CANVAS_SIZE[1] + 13
 
     master = Tk()
     master.title("Conway's Game of Life")
@@ -76,34 +76,35 @@ class Controller:
 
     def update_callback(self):
         """ Get the seed from gamedisplay, initialize and update the board, then update the display """
-        live_cells = Controller.gamedisplay.get_live_cells()
-        print(f"[__init__.Controller.update_callback<GameDisplay>]: {live_cells}")
+        current = Controller.gamedisplay.get_live_cells()
+        print(f"[__init__.Controller.update_callback<GameDisplay>]: {current}")
 
-        self.game.initialize_board_from_seed(live_cells)
-        del(live_cells)
+        self.game.initialize_board_from_seed(current)
         self.game.update_board()
-        live_cells = self.game.get_live_cells()
-        print(f"[__init__.Controller.update_callback<Game>]: {live_cells}")
+        updated = self.game.get_live_cells()
+        print(f"[__init__.Controller.update_callback<Game>]: {updated}")
+        # if current and updated are the same, the patterns are static, stop the loop
 
-        Controller.gamedisplay.display_cells(live_cells)
+        Controller.gamedisplay.display_cells(updated)
 
-        if Controller.loop:
+        if cnf.no_change(current,updated) and Controller.loop:
+            self.updateBtn.config(state="active")
+            self.clearBtn.config(state="active")
+        elif Controller.loop:
             Controller.master.after(500, self.update_callback)
 
     def loop_switch(self):
-        """ Switch to control looping through generations instead of one at a time. """
+        """ Switch callback to control looping through generations instead of one at a time. """
         Controller.loop = False if Controller.loop else True
         if Controller.loop:
             self.updateBtn.invoke()
             self.updateBtn.config(state="disabled")
             self.clearBtn.config(state="disabled")
-
-            self.updateLoopBtn.config(bg=Colors.GREEN)
         else:
             self.updateBtn.config(state="active")
             self.clearBtn.config(state="active")
 
     def reset(self):
-        """ reset all cells in game.board and gamedisplay._all_cells to State.DEAD """
-        self.game.initialize_board_from_seed(seed=None)
+        """ reset all cells in game and gamedisplay to State.DEAD """
+        self.game.reset_board()
         Controller.gamedisplay.reset_cells()

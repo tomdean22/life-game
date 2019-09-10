@@ -1,5 +1,5 @@
 import numpy as np
-from .helpers import State, Trigger, Configuration as config
+from .helpers import State, Trigger, Config as cnf
 
 
 class Game:
@@ -20,27 +20,32 @@ class Game:
         Create a new Game Board
         
         Parameters:
-            seed: list of live cells as (row, column) tuples
+            seed: list of live cells as cell ids
         """
+        self.board = np.full((cnf.ROWS,cnf.COLUMNS), State.DEAD)
         self.initialize_board_from_seed(seed)
 
-    def initialize_board_from_seed(self, seed:[(1,2),(3,4)]=None):
+    def initialize_board_from_seed(self, seed:(1,2,3)=None):
         """
         Create a 2D numpy array with an initial state of State.DEAD.
         Change state of cells in seed to State.ALIVE.
 
         Parameters;
-            seed: list of live cells as (row, column) tuples
+            seed: list of live cells as cell ids
         """
-
-        self.board = np.full((config.ROWS,config.COLUMNS), State.DEAD)
+        
+        del(self.board)
+        self.board = np.full((cnf.ROWS,cnf.COLUMNS), State.DEAD)
+        
         if seed is None or len(seed) == 0:
             return
-        else:
-            print(f"[gameoflife.Game.initialize_board_from_seed]: {seed}")
 
-        for r,c in seed:
-            self.board[r][c] = State.ALIVE
+        print(f"[gameoflife.Game.initialize_board_from_seed]: {seed}")
+        for r,c in map(cnf.convertIDtoRC, seed):
+            self.board[r,c] = State.ALIVE
+
+    def reset_board(self):
+        self.initialize_board_from_seed(seed=None)
         
     def count_neighbors(self, row, column) -> int:
         """
@@ -59,7 +64,7 @@ class Game:
                     pass
                 else:
                     try:
-                        if self.board[row+i][column+j] == State.ALIVE:
+                        if self.board[row+i, column+j] is State.ALIVE:
                             count += 1
                     except IndexError:
                         # What to do with neighbor cells outside the grid?
@@ -70,16 +75,15 @@ class Game:
     def update_board(self):
         """ Apply Conway's rules """
 
-        next_gen = np.full((config.ROWS, config.COLUMNS), State.DEAD)
-        for row in range(config.ROWS):
-            for column in range(config.COLUMNS):
-                state = self.board[row][column]
-                if Game.rules[state][0](row, column, self):
-                    print(f"[gameoflife.Game.update_board]: \
-                        ({row:2},{column:2}) {state:1} -> {Game.rules[state][1]}")
-                    next_gen[row][column] = Game.rules[state][1]
+        next_gen = np.full((cnf.ROWS, cnf.COLUMNS), State.DEAD)
+
+        for i,row in enumerate(self.board):
+            for j,cell_state in enumerate(row):
+                if Game.rules[cell_state][0](i,j,self):
+                    print(f"[gameoflife.Game.update_board]: ({i:2},{j:2}) {cell_state:11} -> {Game.rules[cell_state][1]}")
+                    next_gen[i,j] = Game.rules[cell_state][1]
                 else:
-                    next_gen[row][column] = state
+                    next_gen[i,j] = cell_state
         del(self.board)
         self.board = next_gen
 
@@ -91,14 +95,13 @@ class Game:
             live_cells: list of live cells as (row, column) tuples
         """
 
-        # Thought: keep board sorted according to value,
-        #          so all State.ALIVE cells are grouped together.
-
+        # numpy arrays return an array of booleans when checking for equality
+        linear_pos = 1
         live_cells = []
-        for row in range(config.ROWS):
-            for column in range(config.COLUMNS):
-                if self.board[row][column] == State.ALIVE:
-                    live_cells.append((row,column))
-        print(f"\n[gameoflife.Game.get_live_cells]: {live_cells}")
+        for row in self.board == State.ALIVE:
+            for column in row:
+                if column:
+                    live_cells.append(linear_pos)
+                linear_pos += 1
+        print(f"[gameoflife.Game.get_live_cells]: {live_cells}")
         return live_cells
-
