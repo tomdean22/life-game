@@ -2,7 +2,7 @@ from tkinter import Tk, LabelFrame, Button
 from tkinter import LEFT, RIGHT, BOTTOM, BOTH, Y
 from src.views import GameDisplay
 from src.helpers import Const
-from src.game_of_life import Game
+from src.gameoflife import Game
 
 
 class Controller:
@@ -52,13 +52,13 @@ class Controller:
 
     def update_callback(self):
         live_cells = Controller.gamedisplay.get_live_cells()
-        print(f"\n[update_callback<GameDisplay>]: {live_cells}")
+        print(f"[__init__.Controller.update_callback<GameDisplay>]: {live_cells}")
 
         self.game.initialize_board_from_seed(live_cells)
         del(live_cells)
         self.game.update_board()
         live_cells = self.game.get_live_cells()
-        print(f"[update_callback<Game>]: {live_cells}")
+        print(f"[__init__.Controller.update_callback<Game>]: {live_cells}")
 
         Controller.gamedisplay.display_cells(live_cells)
 

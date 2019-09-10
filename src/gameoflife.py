@@ -3,29 +3,55 @@ from .helpers import State, Trigger, Const
 
 
 class Game:
+    """
+    A class for Conway's Game of Life
+    
+    Attributes:
+        board: 2D numpy array of (row, column) tuples
+        rules: Conway's Game of Life rules    
+    """
     rules = {
         State.DEAD: (Trigger.JUSTRIGHT, State.ALIVE),
         State.ALIVE: (Trigger.BADPOPULATION, State.DEAD)
     }
 
     def __init__(self, seed=None):
+        """
+        Create a new Game Board
+        
+        Parameters:
+            seed: list of live cells as (row, column) tuples
+        """
         self.initialize_board_from_seed(seed)
 
-    def initialize_board_from_seed(self, seed=None):
+    def initialize_board_from_seed(self, seed:[(1,2),(3,4)]=None):
         """
         Create a 2D numpy array with an initial state of State.DEAD.
-        If a seed list is given, the cells 
+        Change state of cells in seed to State.ALIVE.
+
+        Parameters;
+            seed: list of live cells as (row, column) tuples
         """
+
         self.board = np.full((Const.ROWS,Const.COLUMNS), State.DEAD)
         if seed is None or len(seed) == 0:
             return
         else:
-            print(f"\n[initialize_board_from_seed]: {seed}")
+            print(f"[gameoflife.Game.initialize_board_from_seed]: {seed}")
 
         for r,c in seed:
             self.board[r][c] = State.ALIVE
         
-    def count_neighbors(self, row: int, column: int) -> int:
+    def count_neighbors(self, row, column) -> int:
+        """
+        Return the number of live cells surrounding self.board[row][column] 
+        
+        Parameters:
+            row, column
+
+        Returns:
+            count: number of neighbors
+        """
         count = 0
         for i in [-1,0,1]:
             for j in [-1,0,1]:
@@ -42,25 +68,36 @@ class Game:
         return count
 
     def update_board(self):
-        print('\n')
+        """ Apply Conway's rules """
+
         next_gen = np.full((Const.ROWS, Const.COLUMNS), State.DEAD)
         for row in range(Const.ROWS):
             for column in range(Const.COLUMNS):
                 state = self.board[row][column]
                 if Game.rules[state][0](row, column, self):
-                    print(f"[update_board]: ({row:2},{column:2}) {state:11} -> {Game.rules[state][1]}")
+                    print(f"[gameoflife.Game.update_board]: ({row:2},{column:2}) {state:11} -> {Game.rules[state][1]}")
                     next_gen[row][column] = Game.rules[state][1]
                 else:
                     next_gen[row][column] = state
         del(self.board)
         self.board = next_gen
 
-    def get_live_cells(self):
-        alive = []
+    def get_live_cells(self) -> list:
+        """
+        Gathers live cells for the display
+        
+        Returns:
+            live_cells: list of live cells as (row, column) tuples
+        """
+
+        # Thought: keep board sorted according to value,
+        #          so all State.ALIVE cells are grouped together.
+
+        live_cells = []
         for row in range(Const.ROWS):
             for column in range(Const.COLUMNS):
                 if self.board[row][column] == State.ALIVE:
-                    alive.append((row,column))
-        print(f"\n[get_live_cells]: {alive}")
-        return alive
+                    live_cells.append((row,column))
+        print(f"\n[gameoflife.Game.get_live_cells]: {live_cells}")
+        return live_cells
 
