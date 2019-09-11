@@ -19,7 +19,7 @@ class Controller:
         updateBtn: update current board to the next generation according to Conway's rules
         updateLoopBtn: trigger loop_switch callback
         quitBtn: close application
-        clearBtn: reset display and game board
+        resetBtn: reset display and game board
     """
     height = cnf.CANVAS_SIZE[0] + 66
     width = cnf.CANVAS_SIZE[1] + 13
@@ -44,7 +44,7 @@ class Controller:
 
     def __init__(self):
         """ Create user interface for Conway's Game of Life """
-        self.game = Game()
+        self.game = None
         
         self.updateBtn = Button(Controller.baseFrame, **Controller.btn_opts,
                             text="Update",
@@ -58,14 +58,14 @@ class Controller:
                             text="Quit",
                             command=Controller.master.quit)
 
-        self.clearBtn = Button(Controller.baseFrame, **Controller.btn_opts,
-                            text="Clear",
+        self.resetBtn = Button(Controller.baseFrame, **Controller.btn_opts,
+                            text="Reset",
                             command=self.reset)
 
         self.updateBtn.pack(fill=Y, side=LEFT)
         self.updateLoopBtn.pack(fill=Y, side=LEFT)
         self.quitBtn.pack(fill=Y, side=RIGHT)
-        self.clearBtn.pack(fill=Y, side=RIGHT)
+        self.resetBtn.pack(fill=Y, side=RIGHT)
         Controller.baseFrame.pack(fill=BOTH, side=BOTTOM)
 
         Controller.master.update()
@@ -79,15 +79,16 @@ class Controller:
         current = Controller.gamedisplay.get_live_cells()
         print(f"[__init__.Controller.update_callback<GameDisplay>]: {current}")
 
-        self.game.initialize_board_from_seed(current)
+        if self.game is None:
+            self.game = Game(current)
         self.game.update_board()
         updated = self.game.get_live_cells()
         print(f"[__init__.Controller.update_callback<Game>]: {updated}")
-
         Controller.gamedisplay.display_cells(updated)
 
-        # if current and updated are the same, the patterns are static, stop the loop
         if Controller.loop:
+            # if current and updated are the same,
+            # the patterns are static, stop the loop
             if cnf.no_change(current,updated):
                 return
             else:
@@ -100,12 +101,12 @@ class Controller:
         if Controller.loop:
             self.updateBtn.invoke()
             self.updateBtn.config(state="disabled")
-            self.clearBtn.config(state="disabled")
+            self.resetBtn.config(state="disabled")
         else:
             self.updateBtn.config(state="active")
-            self.clearBtn.config(state="active")
+            self.resetBtn.config(state="active")
 
     def reset(self):
         """ reset all cells in game and gamedisplay to State.DEAD """
-        self.game.reset_board()
+        self.game = None
         Controller.gamedisplay.reset_cells()
