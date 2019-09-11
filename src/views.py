@@ -24,14 +24,13 @@ class GameDisplay:
             x = cnf.STARTPOS
             for column in range(cnf.COLUMNS):
                 self._all_cells[linear_pos] = self._canv.create_rectangle(
-                    x, y, x+cnf.CELL_SIZE, y+cnf.CELL_SIZE,
-                    cnf.set_opts(State.DEAD))
+                    x, y, x+cnf.CELL_SIZE, y+cnf.CELL_SIZE, cnf.set_opts(State.DEAD))
                 linear_pos += 1
                 x += cnf.CELL_SIZE
             y += cnf.CELL_SIZE
 
     def get_live_cells(self):
-        """ Collect cells from gamedisplay to be used as the seed """
+        """ Collect cells from the display to be used as the seed """
         return self._canv.find_withtag(State.ALIVE)
 
     def reset_cells(self):
@@ -51,11 +50,11 @@ class GameDisplay:
         print(f"[views.GameDisplay.select_cell]: {id_} at location: {rc}")
 
         try:
-            color = self._canv.itemcget(self._all_cells[id_], option="fill")
+            tag = self._canv.itemcget(self._all_cells[id_], option="tags")
         except KeyError:
             print(f"[views.GameDisplay.select_cell]: {rc} -- outside grid")
         else:
-            if color == Colors.LIGHT:
+            if  str(State.DEAD) in tag:
                 opts = cnf.set_opts(State.ALIVE)
             else:
                 opts = cnf.set_opts(State.DEAD)

@@ -38,7 +38,7 @@ class Config:
                       else Config.COLUMNS - 1
     convertIDtoRC = lambda id: (Config.flr(id), Config.md(id))
 
-    # views.GameDisplay.select_cell event
+    # views.GameDisplay.select_cell
     _getX = lambda e: e.widget.canvasx(e.x)
     _getY = lambda e: e.widget.canvasx(e.y)
     getID = lambda e: e.widget.find_closest(Config._getX(e),

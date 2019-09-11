@@ -92,7 +92,7 @@ class Game:
         Gathers live cells for the display
         
         Returns:
-            live_cells: list of live cells as cell ids
+            live_cells: list of live cell ids
         """
 
         # numpy arrays return an array of booleans when checking for equality

@@ -87,11 +87,12 @@ class Controller:
         Controller.gamedisplay.display_cells(updated)
 
         # if current and updated are the same, the patterns are static, stop the loop
-        if cnf.no_change(current,updated) and Controller.loop:
-            self.updateBtn.config(state="active")
-            self.clearBtn.config(state="active")
-        elif Controller.loop:
-            Controller.master.after(500, self.update_callback)
+        if Controller.loop:
+            if cnf.no_change(current,updated):
+                return
+            else:
+                Controller.master.after(500, self.update_callback)
+                
 
     def loop_switch(self):
         """ Switch callback to control looping through generations instead of one at a time. """
